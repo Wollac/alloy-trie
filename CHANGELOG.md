@@ -5,6 +5,82 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0](https://github.com/alloy-rs/trie/releases/tag/v0.6.0) - 2024-09-26
+
+### Features
+
+- Replace std/hashbrown with alloy_primitives::map ([#42](https://github.com/alloy-rs/trie/issues/42))
+- Empty root node ([#36](https://github.com/alloy-rs/trie/issues/36))
+
+### Miscellaneous Tasks
+
+- Display more information on assertions ([#40](https://github.com/alloy-rs/trie/issues/40))
+- Expose `rlp_node` ([#38](https://github.com/alloy-rs/trie/issues/38))
+- Remove children hashes methods ([#35](https://github.com/alloy-rs/trie/issues/35))
+
+### Performance
+
+- Change proof internal repr to `HashMap` ([#43](https://github.com/alloy-rs/trie/issues/43))
+- [proof] Compare slices for first node ([#37](https://github.com/alloy-rs/trie/issues/37))
+
+## [0.5.3](https://github.com/alloy-rs/trie/releases/tag/v0.5.3) - 2024-09-17
+
+### Dependencies
+
+- Bump msrv to 1.79 ([#33](https://github.com/alloy-rs/trie/issues/33))
+
+### Miscellaneous Tasks
+
+- Release 0.5.3
+- Release 0.5.2
+- Use `decode_raw` from `alloy-rlp` ([#19](https://github.com/alloy-rs/trie/issues/19))
+
+### Testing
+
+- Zero value leaf ([#34](https://github.com/alloy-rs/trie/issues/34))
+
+## [0.5.1](https://github.com/alloy-rs/trie/releases/tag/v0.5.1) - 2024-09-02
+
+### Bug Fixes
+
+- No-std compat ([#31](https://github.com/alloy-rs/trie/issues/31))
+
+### Features
+
+- Workflow to validate no_std compatibility ([#32](https://github.com/alloy-rs/trie/issues/32))
+
+### Miscellaneous Tasks
+
+- Release 0.5.1
+
+## [0.5.0](https://github.com/alloy-rs/trie/releases/tag/v0.5.0) - 2024-08-28
+
+### Bug Fixes
+
+- In-place nodes ignored in proof verification ([#27](https://github.com/alloy-rs/trie/issues/27))
+
+### Dependencies
+
+- Bump derive more ([#30](https://github.com/alloy-rs/trie/issues/30))
+- [deps] Bump alloy ([#28](https://github.com/alloy-rs/trie/issues/28))
+- Bump proptest ([#18](https://github.com/alloy-rs/trie/issues/18))
+
+### Documentation
+
+- Small fix on HashBuilderValue  docs ([#20](https://github.com/alloy-rs/trie/issues/20))
+
+### Features
+
+- Iterator over branch children ([#21](https://github.com/alloy-rs/trie/issues/21))
+
+### Miscellaneous Tasks
+
+- Release 0.5.0
+- Make clippy happy ([#29](https://github.com/alloy-rs/trie/issues/29))
+- Make `TrieNode` cloneable ([#22](https://github.com/alloy-rs/trie/issues/22))
+- Make clippy happy ([#17](https://github.com/alloy-rs/trie/issues/17))
+- Sync cliff.toml
+
 ## [0.4.1](https://github.com/alloy-rs/trie/releases/tag/v0.4.1) - 2024-05-22
 
 ### Bug Fixes
@@ -14,6 +90,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Dependencies
 
 - Move path encoding from `nybbles` ([#14](https://github.com/alloy-rs/trie/issues/14))
+
+### Miscellaneous Tasks
+
+- Release 0.4.1
 
 ## [0.4.0](https://github.com/alloy-rs/trie/releases/tag/v0.4.0) - 2024-05-14
 

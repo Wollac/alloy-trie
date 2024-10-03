@@ -1,4 +1,4 @@
-use super::{super::Nibbles, rlp_node, unpack_path_to_nibbles};
+use super::{super::Nibbles, unpack_path_to_nibbles, RlpNode};
 use alloy_primitives::{hex, Bytes};
 use alloy_rlp::{length_of_length, BufMut, Decodable, Encodable, Header};
 use core::fmt;
@@ -6,6 +6,8 @@ use core::fmt;
 #[allow(unused_imports)]
 use alloc::vec::Vec;
 
+/// An extension node in an Ethereum Merkle Patricia Trie.
+///
 /// An intermediate node that exists solely to compress the trie's paths. It contains a path segment
 /// (a shared prefix of keys) and a single child pointer. Essentially, an extension node can be
 /// thought of as a shortcut within the trie to reduce its overall depth.
@@ -18,7 +20,7 @@ pub struct ExtensionNode {
     /// The key for this extension node.
     pub key: Nibbles,
     /// A pointer to the child node.
-    pub child: Vec<u8>,
+    pub child: RlpNode,
 }
 
 impl fmt::Debug for ExtensionNode {
@@ -31,10 +33,12 @@ impl fmt::Debug for ExtensionNode {
 }
 
 impl Encodable for ExtensionNode {
+    #[inline]
     fn encode(&self, out: &mut dyn BufMut) {
         self.as_ref().encode(out)
     }
 
+    #[inline]
     fn length(&self) -> usize {
         self.as_ref().length()
     }
@@ -56,7 +60,7 @@ impl Decodable for ExtensionNode {
         };
 
         let key = unpack_path_to_nibbles(first, &encoded_key[1..]);
-        let child = Vec::from(bytes);
+        let child = RlpNode::from_raw_rlp(bytes)?;
         Ok(Self { key, child })
     }
 }
@@ -69,7 +73,7 @@ impl ExtensionNode {
     pub const ODD_FLAG: u8 = 0x10;
 
     /// Creates a new extension node with the given key and a pointer to the child.
-    pub const fn new(key: Nibbles, child: Vec<u8>) -> Self {
+    pub const fn new(key: Nibbles, child: RlpNode) -> Self {
         Self { key, child }
     }
 
@@ -97,6 +101,7 @@ impl fmt::Debug for ExtensionNodeRef<'_> {
 }
 
 impl Encodable for ExtensionNodeRef<'_> {
+    #[inline]
     fn encode(&self, out: &mut dyn BufMut) {
         Header { list: true, payload_length: self.rlp_payload_length() }.encode(out);
         self.key.encode_path_leaf(false).as_slice().encode(out);
@@ -104,6 +109,7 @@ impl Encodable for ExtensionNodeRef<'_> {
         out.put_slice(self.child);
     }
 
+    #[inline]
     fn length(&self) -> usize {
         let payload_length = self.rlp_payload_length();
         payload_length + length_of_length(payload_length)
@@ -112,17 +118,20 @@ impl Encodable for ExtensionNodeRef<'_> {
 
 impl<'a> ExtensionNodeRef<'a> {
     /// Creates a new extension node with the given key and a pointer to the child.
+    #[inline]
     pub const fn new(key: &'a Nibbles, child: &'a [u8]) -> Self {
         Self { key, child }
     }
 
-    /// RLP encodes the node and returns either RLP(Node) or RLP(keccak(RLP(node))).
-    pub fn rlp(&self, buf: &mut Vec<u8>) -> Vec<u8> {
-        self.encode(buf);
-        rlp_node(buf)
+    /// RLP-encodes the node and returns either `rlp(node)` or `rlp(keccak(rlp(node)))`.
+    #[inline]
+    pub fn rlp(&self, rlp: &mut Vec<u8>) -> RlpNode {
+        self.encode(rlp);
+        RlpNode::from_rlp(rlp)
     }
 
     /// Returns the length of RLP encoded fields of extension node.
+    #[inline]
     fn rlp_payload_length(&self) -> usize {
         let mut encoded_key_len = self.key.len() / 2 + 1;
         // For extension nodes the first byte cannot be greater than 0x80.
@@ -143,9 +152,9 @@ mod tests {
         let val = hex!("76657262");
         let mut child = vec![];
         val.to_vec().as_slice().encode(&mut child);
-        let extension = ExtensionNode::new(nibble, child);
+        let extension = ExtensionNode::new(nibble, RlpNode::from_raw(&child).unwrap());
         let rlp = extension.as_ref().rlp(&mut vec![]);
-        assert_eq!(rlp, hex!("c98300646f8476657262"));
+        assert_eq!(rlp.as_ref(), hex!("c98300646f8476657262"));
         assert_eq!(ExtensionNode::decode(&mut &rlp[..]).unwrap(), extension);
     }
 }
