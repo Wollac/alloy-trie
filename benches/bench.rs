@@ -1,6 +1,8 @@
+#![allow(missing_docs)]
+
 use alloy_trie::nodes::encode_path_leaf;
 use criterion::{
-    criterion_group, criterion_main, measurement::WallTime, BenchmarkGroup, Criterion,
+    BenchmarkGroup, Criterion, criterion_group, criterion_main, measurement::WallTime,
 };
 use nybbles::Nibbles;
 use proptest::{prelude::*, strategy::ValueTree};
@@ -8,15 +10,15 @@ use std::{hint::black_box, time::Duration};
 
 /// Benchmarks the nibble path encoding.
 pub fn nibbles_path_encoding(c: &mut Criterion) {
-    let lengths = [16u64, 32, 256, 2048];
+    let lengths = [8u64, 16, 32, 64];
 
     let mut g = group(c, "encode_path_leaf");
     for len in lengths {
         g.throughput(criterion::Throughput::Bytes(len));
         let id = criterion::BenchmarkId::new("trie", len);
         g.bench_function(id, |b| {
-            let nibbles = get_nibbles(len as usize);
-            b.iter(|| black_box(encode_path_leaf(&nibbles, false)))
+            let nibbles = &get_nibbles(len as usize);
+            b.iter(|| encode_path_leaf(black_box(nibbles), false))
         });
     }
 }

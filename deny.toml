@@ -1,9 +1,14 @@
+# This section is considered when running `cargo deny check advisories`
+# More documentation for the advisories section can be found here:
+# https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
 [advisories]
-vulnerability = "deny"
-unmaintained = "warn"
-unsound = "warn"
 yanked = "warn"
-notice = "warn"
+ignore = [
+    # https://rustsec.org/advisories/RUSTSEC-2024-0436 paste! is unmaintained
+    "RUSTSEC-2024-0436",
+    # Fixed in ruint 1.20.0, which requires Rust 1.90 (our MSRV is 1.85).
+    "RUSTSEC-2026-0220",
+]
 
 [bans]
 multiple-versions = "warn"
@@ -11,7 +16,6 @@ wildcards = "deny"
 highlight = "all"
 
 [licenses]
-unlicensed = "deny"
 confidence-threshold = 0.9
 # copyleft = "deny"
 
@@ -23,9 +27,10 @@ allow = [
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
-    "Unicode-DFS-2016",
+    "Unicode-3.0",
     "Unlicense",
     "MPL-2.0",
+    "Zlib",
     # https://github.com/briansmith/ring/issues/902
     "LicenseRef-ring",
     # https://github.com/briansmith/webpki/issues/148
